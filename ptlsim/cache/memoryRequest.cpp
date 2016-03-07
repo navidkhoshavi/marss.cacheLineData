@@ -50,7 +50,8 @@ void MemoryRequest::init(W8 coreId,
 		bool isInstruction,
 		W64 ownerRIP,
 		W64 ownerUUID,
-		OP_TYPE opType)
+		OP_TYPE opType,
+		W64 clData);
 {
 	coreId_ = coreId;
 	threadId_ = threadId;
@@ -61,6 +62,7 @@ void MemoryRequest::init(W8 coreId,
 	ownerUUID_ = ownerUUID;
 	refCounter_ = 0; // or maybe 1
 	opType_ = opType;
+	clData_ = clData; // added by Navid
 	isData_ = !isInstruction;
 
 	if(history) delete history;
@@ -80,6 +82,7 @@ void MemoryRequest::init(MemoryRequest *request)
 	ownerUUID_ = request->ownerUUID_;
 	refCounter_ = 0; // or maybe 1
 	opType_ = request->opType_;
+	clData_ = request->clData_; // added by Navid
 	isData_ = request->isData_;
 
 	if(history) delete history;
