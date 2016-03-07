@@ -67,6 +67,7 @@ class MemoryRequest: public selfqueuelink
 			isData_ = 0;
 			history = new stringbuf();
             coreSignal_ = NULL;
+			clData_ = 0; //cache line data  
 		}
 
 		void incRefCounter(){
@@ -77,6 +78,7 @@ class MemoryRequest: public selfqueuelink
 			refCounter_--;
 		}
 
+// modified by Navid
 		void init(W8 coreId,
 				W8 threadId,
 				W64 physicalAddress,
@@ -85,7 +87,8 @@ class MemoryRequest: public selfqueuelink
 				bool isInstruction,
 				W64 ownerRIP,
 				W64 ownerUUID,
-				OP_TYPE opType);
+				OP_TYPE opType,
+				W64 clData);
 
 		bool is_same(W8 coreid,
 				W8 threadid,
@@ -130,6 +133,8 @@ class MemoryRequest: public selfqueuelink
 
 		stringbuf& get_history() { return *history; }
 
+		W64 get_cl_data() { return int(clData_); } // added by Navid
+
         bool is_kernel() {
             // based on owner RIP value
             if(bits(ownerRIP_, 48, 16) != 0) {
@@ -161,6 +166,7 @@ class MemoryRequest: public selfqueuelink
 			os << "ownerUUID[", ownerUUID_, "] ";
 			os << "ownerRIP[", (void*)ownerRIP_, "] ";
 			os << "History[ " << *history << "] ";
+			os << "cache line data[", clData_, "] ";
             if(coreSignal_) {
                 os << "Signal[ " << coreSignal_->get_name() << "] ";
             }
@@ -179,6 +185,7 @@ class MemoryRequest: public selfqueuelink
 		int refCounter_;
 		OP_TYPE opType_;
 		stringbuf *history;
+		W64 clData_;
         Signal *coreSignal_;
 
 };
