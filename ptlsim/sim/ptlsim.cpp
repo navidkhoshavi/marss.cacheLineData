@@ -46,6 +46,7 @@ extern ConfigurationParser<PTLsimConfig> config;
 PTLsimMachine ptl_machine;
 
 ofstream ptl_logfile;
+ofstream llc_tracefile;
 #ifdef TRACE_RIP
 ofstream ptl_rip_trace;
 #endif
@@ -160,6 +161,7 @@ void ConfigurationParser<PTLsimConfig>::reset() {
   core_name = "base"; /* core_name no longer user setable, the machine builder
                          will handle setting this */
   log_filename = "ptlsim.log";
+  trace_filename = "llc_access_trace.log";
   loglevel = 0;
   start_log_at_iteration = 0;
   start_log_at_rip = INVALIDRIP;
@@ -257,6 +259,7 @@ void ConfigurationParser<PTLsimConfig>::setup() {
   section("General Logging Control");
   add(quiet,                        "quiet",                "Do not print PTLsim system information banner");
   add(log_filename,                 "logfile",              "Log filename (use /dev/fd/1 for stdout, /dev/fd/2 for stderr)");
+  add(trace_filename,               "tracefile",            "LLC trace filename (use /dev/fd/1 for stdout, /dev/fd/2 for stderr)");
   add(loglevel,                     "loglevel",             "Log level (0 to 99)");
   add(start_log_at_iteration,       "startlog",             "Start logging after iteration <startlog>");
   add(start_log_at_rip,             "startlogrip",          "Start logging after first translation of basic block starting at rip");
@@ -406,6 +409,7 @@ void print_usage() {
 stringbuf current_stats_filename;
 stringbuf current_log_filename;
 stringbuf current_bbcache_dump_filename;
+stringbuf current_trace_filename;
 stringbuf current_trace_memory_updates_logfile;
 stringbuf current_yaml_stats_filename;
 W64 current_start_sim_rip;
@@ -421,6 +425,16 @@ void backup_and_reopen_logfile() {
   }
 }
 
+void backup_and_reopen_tracefile() {
+  if (config.trace_filename) {
+    if (llc_tracefile) llc_tracefile.close();
+    stringbuf oldname;
+    oldname << config.trace_filename << ".backup";
+    sys_unlink(oldname);
+    sys_rename(config.trace_filename, oldname);
+    llc_tracefile.open(config.trace_filename);
+  }
+} 
 void backup_and_reopen_yamlstats() {
   if (config.yaml_stats_filename) {
     if (yaml_stats_file) yaml_stats_file.close();
@@ -561,6 +575,10 @@ bool handle_config_change(PTLsimConfig& config) {
     // Can also use "-ptl_logfile /dev/fd/1" to send to stdout (or /dev/fd/2 for stderr):
     backup_and_reopen_logfile();
     current_log_filename = config.log_filename;
+  }
+  if (config.trace_filename.set() && (config.trace_filename != current_trace_filename)) {
+    backup_and_reopen_tracefile();
+    current_trace_filename = config.trace_filename;
   }
 #ifdef TRACE_RIP
   if(!ptl_rip_trace.is_open())

@@ -138,6 +138,7 @@ bool handle_config_change(PTLsimConfig& config);
 void collect_sysinfo(PTLsimStats& stats, int argc, char** argv);
 void print_sysinfo(ostream& os);
 void backup_and_reopen_logfile();
+void backup_and_reopen_tracefile();
 void backup_and_reopen_mem_logfile();
 void backup_and_reopen_yamlstats();
 void shutdown_subsystems();
@@ -163,6 +164,7 @@ void synth_uops_for_bb(BasicBlock& bb);
 struct PTLsimStats;
 
 extern ofstream ptl_logfile;
+extern ofstream llc_tracefile;
 extern ofstream trace_mem_logfile;
 extern W64 sim_cycle;
 extern W64 user_insn_commits;
@@ -200,6 +202,7 @@ struct PTLsimConfig {
   // Logging
   bool quiet;
   stringbuf log_filename;
+  stringbuf trace_filename;
   W64 loglevel;
   W64 start_log_at_iteration;
   W64 start_log_at_rip;
