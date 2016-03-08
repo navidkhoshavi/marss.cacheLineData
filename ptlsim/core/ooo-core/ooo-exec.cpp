@@ -1753,11 +1753,14 @@ int ReorderBufferEntry::issueload(LoadStoreQueueEntry& state, Waddr& origaddr, W
         state.sfr_bytemask = 0;
     }
 
+    //W64 vaddr = get_virt_address(uop, true); //added by Navid vaddr => virtaddr, what is uop?
+    //W64 cldata = thread->ctx.loadvirt(vaddr, rob.uop.size); //added by Navid, what is uop.size
+
     Memory::MemoryRequest *request = core.memoryHierarchy->get_free_request(core.get_coreid());
     assert(request != NULL);
 
     request->init(core.get_coreid(), threadid, state.physaddr << 3, idx, sim_cycle,
-            false, uop.rip.rip, uop.uuid, Memory::MEMORY_OP_READ);
+            false, uop.rip.rip, uop.uuid, Memory::MEMORY_OP_READ, data); // modified by Navid
     request->set_coreSignal(&core.dcache_signal);
 
     bool L1hit = core.memoryHierarchy->access_cache(request);
@@ -2063,7 +2066,7 @@ rob_cont:
     assert(request != NULL);
 
     request->init(core.get_coreid(), threadid, pteaddr, idx, sim_cycle,
-            false, uop.rip.rip, uop.uuid, Memory::MEMORY_OP_READ);
+            false, uop.rip.rip, uop.uuid, Memory::MEMORY_OP_READ, physreg->data); //modified by Navid
     request->set_coreSignal(&core.dcache_signal);
 
     lsq->physaddr = pteaddr >> 3;

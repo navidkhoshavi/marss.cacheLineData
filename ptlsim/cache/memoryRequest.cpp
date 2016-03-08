@@ -51,7 +51,7 @@ void MemoryRequest::init(W8 coreId,
 		W64 ownerRIP,
 		W64 ownerUUID,
 		OP_TYPE opType,
-		W64 clData);
+		W64 clData)
 {
 	coreId_ = coreId;
 	threadId_ = threadId;

@@ -133,7 +133,7 @@ class MemoryRequest: public selfqueuelink
 
 		stringbuf& get_history() { return *history; }
 
-		W64 get_cl_data() { return int(clData_); } // added by Navid
+		W64 get_cl_data() { return clData_; } // added by Navid
 
         bool is_kernel() {
             // based on owner RIP value

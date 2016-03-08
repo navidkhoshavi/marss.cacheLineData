@@ -241,7 +241,8 @@ bool CacheController::handle_interconnect_cb(void *arg)
 #ifdef LLC_TRACE
 					W64 lineAddress = get_line_address(msg->request);
 					OP_TYPE access_type = msg->request->get_type();
-					llc_tracefile << sim_cycle << " " << access_type << " " << lineAddress << endl;
+					W64 cacheLine_content = msg->request->get_cl_data();
+					llc_tracefile << sim_cycle << " " << access_type << " " << lineAddress << " " << cacheLine_content << endl;
 
 #endif
 

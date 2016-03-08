@@ -1926,6 +1926,10 @@ bool AtomThread::fetch_from_icache()
     Waddr physaddr = ctx.check_and_translate(fetchrip, 3,
             false, false, exception_, mmio, pfec, true);
 
+    //W64 vaddr = get_virt_address(uop, true); //added by Navid vaddr => virtaddr, what is uop?
+    //W64 cldata = thread->ctx.loadvirt(vaddr, uop.size); //added by Navid, what is uop.size
+ 
+
     W64 req_icache_block = floor(physaddr, ICACHE_FETCH_GRANULARITY);
 
     if(exception_) {
@@ -1958,7 +1962,7 @@ bool AtomThread::fetch_from_icache()
         assert(request != NULL);
 
         request->init(core.get_coreid(), threadid, physaddr, 0, sim_cycle,
-                true, fetchrip.rip, 0, Memory::MEMORY_OP_READ);
+                true, fetchrip.rip, 0, Memory::MEMORY_OP_READ, 0); //There is no data here, there is just uop. Thus, we don't push uop into this line.
         request->set_coreSignal(&icache_signal);
 
         hit = core.memoryHierarchy->access_cache(request);
@@ -2073,6 +2077,7 @@ itlb_walk_finish:
 
     W64 pteaddr = ctx.virt_to_pte_phys_addr(fetchrip, itlb_walk_level);
 
+
     if(pteaddr == (W64)-1) {
         // Its a page fault but it will be detected when our fetchrip is same
         // as ctx.eip
@@ -2091,7 +2096,7 @@ itlb_walk_finish:
     assert(request != NULL);
 
     request->init(core.get_coreid(), threadid, pteaddr, 0, sim_cycle,
-            true, fetchrip.rip, 0, Memory::MEMORY_OP_READ);
+            true, fetchrip.rip, 0, Memory::MEMORY_OP_READ,0); // modified by Navid
     request->set_coreSignal(&icache_signal);
 
     icache_miss_addr = floor(pteaddr, ICACHE_FETCH_GRANULARITY);
@@ -2148,7 +2153,7 @@ dtlb_walk_finish:
     assert(request != NULL);
 
     request->init(core.get_coreid(), threadid, pteaddr, 0, sim_cycle,
-            false, 0, 0, Memory::MEMORY_OP_READ);
+            false, 0, 0, Memory::MEMORY_OP_READ, 0); //Navid:D-cache. we don't push data into this line.
     request->set_coreSignal(&dcache_signal);
 
     bool L1_hit = core.memoryHierarchy->access_cache(request);
@@ -2377,7 +2382,7 @@ bool AtomThread::access_dcache(Waddr addr, W64 rip, W8 type, W64 uuid)
     assert(request);
 
     request->init(core.get_coreid(), threadid, addr, 0,
-            sim_cycle, false, rip, uuid, (Memory::OP_TYPE)type);
+            sim_cycle, false, rip, uuid, (Memory::OP_TYPE)type, 0); //Navid: atomcore is not in my cpu configuration
     request->set_coreSignal(&dcache_signal);
 
     st_dcache.accesses++;
