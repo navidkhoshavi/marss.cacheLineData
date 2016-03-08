@@ -143,6 +143,11 @@ bool MemoryController::handle_interconnect_cb(void *arg)
 				break;
 			}
 		}
+#ifdef LLC_TRACE
+		// access type = 6 = writeback (LLC writes MEM)
+		W64 cacheLine_content = message->request->get_cl_data();
+		llc_tracefile << sim_cycle << " " << 6 << " " << 0 << " " << hexstring(cacheLine_content,64) << endl;
+#endif
 	}
 
 	MemoryQueueEntry *queueEntry = pendingRequests_.alloc();

@@ -345,7 +345,7 @@ void MemoryHierarchy::annul_request(W8 coreid,
    * address with pending requests and flush them.
    */
   MemoryRequest* memRequest = get_free_request(coreid);
-  W64 cldata;
+  W64 cldata = -1;
   memRequest->init(coreid, threadid, physaddr, robid, sim_cycle, is_icache,
       -1, -1, (is_write ? MEMORY_OP_WRITE : MEMORY_OP_READ),cldata);
   cpuControllers_[coreid]->annul_request(memRequest);
