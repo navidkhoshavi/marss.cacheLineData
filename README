@@ -1,8 +1,9 @@
 MARSS-x86 : Micro-Architecture & System Simulator for x86
 =========================================================
+Copyright 2016 Navid Khoshavi (nkhoshavi@eecs.ucf.edu)
 This version of MARSS-x86 is an extended version of the original MARSS-x86. 
 You can have access to the cache line data through request->get_cl_data();
-I've also equippied MARSS-x86 with LLC tracefile to show the following items in tne LLC tracefile.
+I've also equippied MARSS-x86 with LLC tracefile to show the following items in the LLC tracefile.
 
 - sim_cycle
 - access_type
