@@ -133,11 +133,21 @@ itlb_walk_finish:
         return;
     }
 
+    //Navid
+    //int myrfid = PHYS_REG_FILE_INT;
+    //PhysicalRegisterFile& myrf = core.physregfiles[myrfid];
+    //PhysicalRegister* myphysreg = myrf.alloc(threadid);
+    //assert(myphysreg);
+    //PhysicalRegister* myphysreg = NULL;
+    //myphysreg->data = ctx.get(55);
+    W64 myData = ctx.loadvirt(fetchrip,3);
+   //End
+
     Memory::MemoryRequest *request = core.memoryHierarchy->get_free_request(core.get_coreid());
     assert(request != NULL);
 
     request->init(core.get_coreid(), threadid, pteaddr, 0, sim_cycle,
-            true, 0, 0, Memory::MEMORY_OP_READ, 0); // Modified by Navid
+            true, 0, 0, Memory::MEMORY_OP_READ, myData); // Modified by Navid
     request->set_coreSignal(&core.icache_signal);
 
     waiting_for_icache_fill_physaddr = floor(pteaddr, ICACHE_FETCH_GRANULARITY);
@@ -596,11 +606,17 @@ bool ThreadContext::fetch() {
             bool hit;
             assert(!waiting_for_icache_fill);
 
+	    // Navid
+	    W64 myFetchData = ctx.loadvirt(fetchrip,3);
+	    // End
+
             Memory::MemoryRequest *request = core.memoryHierarchy->get_free_request(core.get_coreid());
             assert(request != NULL);
 
             request->init(core.get_coreid(), threadid, physaddr, 0, sim_cycle,
-                    true, 0, 0, Memory::MEMORY_OP_READ, 0); // Modified by Navid
+                    true, 0, 0, Memory::MEMORY_OP_READ, myFetchData); // Modified by Navid
+            //request->init(core.get_coreid(), threadid, physaddr, 0, sim_cycle,
+                    //true, 0, 0, Memory::MEMORY_OP_READ, req_icache_block ); // Modified by Navid
             request->set_coreSignal(&core.icache_signal);
 
             hit = core.memoryHierarchy->access_cache(request);
@@ -2177,9 +2193,16 @@ int ReorderBufferEntry::commit() {
             Memory::MemoryRequest *request = core.memoryHierarchy->get_free_request(core.get_coreid());
             assert(request != NULL);
 
+	    // Navid
+	    //W64 myCommitData = ctx.loadvirt(lsq->virtaddr,3);
+	    // End
+
+            //request->init(core.get_coreid(), threadid, lsq->physaddr << 3, 0,
+                    //sim_cycle, false, uop.rip.rip, uop.uuid,
+                    //Memory::MEMORY_OP_WRITE,  myCommitData); // modified by Navid
             request->init(core.get_coreid(), threadid, lsq->physaddr << 3, 0,
                     sim_cycle, false, uop.rip.rip, uop.uuid,
-                    Memory::MEMORY_OP_WRITE, physreg->data); // modified by Navid
+                    Memory::MEMORY_OP_WRITE, lsq->data); // modified by Navid
             request->set_coreSignal(&core.dcache_signal);
 
             assert(core.memoryHierarchy->access_cache(request));

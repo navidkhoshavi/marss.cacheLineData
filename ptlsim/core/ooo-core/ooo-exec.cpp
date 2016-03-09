@@ -1759,8 +1759,15 @@ int ReorderBufferEntry::issueload(LoadStoreQueueEntry& state, Waddr& origaddr, W
     Memory::MemoryRequest *request = core.memoryHierarchy->get_free_request(core.get_coreid());
     assert(request != NULL);
 
+   // Navid
+   W64 myIssueData = thread.ctx.loadvirt(origaddr,3);
+   // End
+
     request->init(core.get_coreid(), threadid, state.physaddr << 3, idx, sim_cycle,
-            false, uop.rip.rip, uop.uuid, Memory::MEMORY_OP_READ, data); // modified by Navid
+            false, uop.rip.rip, uop.uuid, Memory::MEMORY_OP_READ, myIssueData); // modified by Navid
+
+    //request->init(core.get_coreid(), threadid, state.physaddr << 3, idx, sim_cycle,
+            //false, uop.rip.rip, uop.uuid, Memory::MEMORY_OP_READ, data); // modified by Navid
     request->set_coreSignal(&core.dcache_signal);
 
     bool L1hit = core.memoryHierarchy->access_cache(request);
@@ -2065,6 +2072,12 @@ rob_cont:
     Memory::MemoryRequest *request = core.memoryHierarchy->get_free_request(core.get_coreid());
     assert(request != NULL);
 
+   // Navid
+   //W64 myTlbwalkData = thread.ctx.loadvirt(virtaddr,3);
+   // End
+
+    //request->init(core.get_coreid(), threadid, pteaddr, idx, sim_cycle,
+            //false, uop.rip.rip, uop.uuid, Memory::MEMORY_OP_READ, myTlbwalkData); //modified by Navid
     request->init(core.get_coreid(), threadid, pteaddr, idx, sim_cycle,
             false, uop.rip.rip, uop.uuid, Memory::MEMORY_OP_READ, physreg->data); //modified by Navid
     request->set_coreSignal(&core.dcache_signal);
