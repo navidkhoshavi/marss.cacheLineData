@@ -1,5 +1,20 @@
 MARSS-x86 : Micro-Architecture & System Simulator for x86
 =========================================================
+This version of MARSS-x86 is an extended version of the original MARSS-x86. 
+You can have access to the cache line data through request->get_cl_data();
+I've also equippied MARSS-x86 with LLC tracefile to show the following items in tne LLC tracefile.
+
+- sim_cycle
+- access_type
+- lineAddress
+- cacheLine_content
+
+If you find this version of MARSS-x86 helpful, please cite our recent papers:
+[1] N. Khoshavi, et al., "Bit-Upset Vulnerability Factor for eDRAMLast Level Cache Immunity Analysis," ISQED, 2016.
+[2] X. Chen, et al., "AOS: Adaptive Overwrite Scheme for Energy-Efficient MLCSTT-RAM Cache," DAC, 2016.
+
+
+You can find the originial README of MARSS-x86 on the below:
 
 Copyright 2010 Avadh Patel (apatel @ cs.binghamton.edu)
 
